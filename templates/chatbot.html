@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqua Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .chat-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .typing{
+            display: flex;
+        }
+
+        .chat-messages {
+            height: 90vh;
+            padding: 20px;
+            overflow-y: auto;   
+        }
+
+        .user-message, .bot-message {
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            text-align: right;
+            color: #333;
+            margin-right: 20px;
+        }
+
+        .bot-message {
+            text-align: left;
+            color: #007bff;
+            margin-right: 20px;
+        }
+
+        .chat-input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            border: none;
+            border-top: 1px solid #ddd;
+            border-radius: 0 0 8px 8px;
+            margin: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .send-button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 0 0 8px 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="typing">
+            <input type="text" class="chat-input" id="userInput" placeholder="Get Enlightened with water footprints">
+            <button class="send-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById('userInput').value;
+            if (userInput.trim() === '') return;
+
+            var chatMessages = document.getElementById('chatMessages');
+
+            var userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'user-message';
+            userMessageDiv.textContent = 'You: ' + userInput;
+            chatMessages.appendChild(userMessageDiv);
+
+            fetch('/generate_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 'prompt': userInput }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'bot-message';
+                botMessageDiv.textContent = 'Bot: ' + data.bot_response;
+                chatMessages.appendChild(botMessageDiv);
+
+                document.getElementById('userInput').value = '';
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html>
