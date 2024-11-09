@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-import gradio as gr
 import openai
 
 app = Flask(__name__)
@@ -13,15 +12,6 @@ def generate_response(prompt):
         max_tokens=150
     )
     return response['choices'][0]['text']
-
-iface = gr.Interface(
-    fn=generate_response,
-    inputs="text",
-    outputs="text",
-    live=True,
-    title="Chatbot with GPT-3",
-    description="zinc level in diabetic milletus group"
-)
 
 @app.route("/")
 def index():
